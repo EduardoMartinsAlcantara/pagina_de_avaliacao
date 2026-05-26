@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avaliação – Cordeiro Pneus</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0f14;
+      --surface: #161a22;
+      --surface2: #1e2330;
+      --accent-star: #f5a623;
+      --accent: #e02020;
+      --accent2: #c0392b;
+      --text: #f0f2f7;
+      --muted: #7a8099;
+      --success: #2ecc71;
+      --radius: 18px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* Background mesh */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(224,32,32,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(192,57,43,0.10) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 28px;
+      padding: 44px 36px 40px;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(224,32,32,0.08);
+      animation: cardIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(32px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1); }
+    }
+
+    /* Logo / badge */
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      box-shadow: 0 6px 20px rgba(224,32,32,0.35);
+    }
+    .brand-name {
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      margin: 0 -8px 28px;
+    }
+
+    .heading {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .subheading {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.55;
+      margin-bottom: 36px;
+    }
+    .subheading span {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Stars */
+    .stars-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .stars {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .star {
+      font-size: 2.6rem;
+      cursor: pointer;
+      color: rgba(255,255,255,0.12);
+      transition: color 0.18s, transform 0.18s;
+      user-select: none;
+      line-height: 1;
+      filter: drop-shadow(0 0 0px transparent);
+    }
+    .star:hover,
+    .star.hovered {
+      transform: scale(1.18) translateY(-3px);
+      color: var(--accent-star);
+      filter: drop-shadow(0 4px 12px rgba(245,166,35,0.6));
+    }
+    .star.selected {
+      color: var(--accent-star);
+      filter: drop-shadow(0 2px 8px rgba(245,166,35,0.55));
+    }
+    .star.selected.active-pulse {
+      animation: starPulse 0.35s ease;
+    }
+    @keyframes starPulse {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.35) translateY(-4px); }
+      100% { transform: scale(1.1) translateY(-2px); }
+    }
+
+    /* Feedback form */
+    .feedback-section {
+      display: none;
+      animation: fadeSlide 0.4s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .feedback-section.visible { display: block; }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .feedback-label::before {
+      content: '💬';
+      font-size: 1rem;
+    }
+
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid rgba(255,255,255,0.09);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      padding: 14px 16px;
+      resize: none;
+      min-height: 110px;
+      outline: none;
+      transition: border-color 0.2s;
+      line-height: 1.5;
+    }
+    textarea:focus {
+      border-color: rgba(224,32,32,0.45);
+    }
+    textarea::placeholder { color: var(--muted); }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 14px;
+      padding: 15px 24px;
+      border: none;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #0d0f14;
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(224,32,32,0.35);
+      transition: transform 0.18s, box-shadow 0.18s, opacity 0.18s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(224,32,32,0.45);
+    }
+    .btn:active { transform: scale(0.98); }
+
+    /* Thank-you states */
+    .thank-you {
+      display: none;
+      text-align: center;
+      animation: fadeSlide 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .thank-you.visible { display: block; }
+    .ty-icon {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+      display: block;
+      animation: popIn 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .ty-title {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+      letter-spacing: -0.02em;
+    }
+    .ty-text {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 32px;
+      text-align: center;
+      color: rgba(255,255,255,0.2);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 32px 22px 28px; border-radius: 22px; }
+      .heading { font-size: 1.3rem; }
+      .star { font-size: 2.3rem; }
+      .stars { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card" id="mainCard">
+
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-icon">🛞</div>
+    <div>
+      <div class="brand-name">Cordeiro Pneus</div>
+      <div class="brand-sub">Avaliação de Atendimento</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Main content -->
+  <div id="ratingSection">
+    <div class="heading">Como foi sua experiência?</div>
+    <p class="subheading">
+      Agradecemos a sua visita! <span>Sua opinião é muito importante para nós</span> e nos ajuda a melhorar cada vez mais.
+    </p>
+
+    <div class="stars-label">Selecione uma nota</div>
+    <div class="stars" id="stars" role="group" aria-label="Avaliação em estrelas">
+      <span class="star" data-value="1" role="button" aria-label="1 estrela" tabindex="0">★</span>
+      <span class="star" data-value="2" role="button" aria-label="2 estrelas" tabindex="0">★</span>
+      <span class="star" data-value="3" role="button" aria-label="3 estrelas" tabindex="0">★</span>
+      <span class="star" data-value="4" role="button" aria-label="4 estrelas" tabindex="0">★</span>
+      <span class="star" data-value="5" role="button" aria-label="5 estrelas" tabindex="0">★</span>
+    </div>
+
+    <!-- Feedback form (1-4 stars) -->
+    <div class="feedback-section" id="feedbackSection">
+      <div class="feedback-label">Conte-nos o que podemos melhorar</div>
+      <textarea id="feedbackText" placeholder="Escreva aqui sua sugestão ou comentário…" maxlength="600"></textarea>
+      <button class="btn" id="sendBtn" onclick="submitFeedback()">
+        <span>Enviar Feedback</span>
+        <span>→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Thank you (after low-rating feedback) -->
+  <div class="thank-you" id="thankYouFeedback">
+    <span class="ty-icon">🙏</span>
+    <div class="ty-title">Obrigado pelo seu retorno!</div>
+    <p class="ty-text">
+      Recebemos sua sugestão e vamos trabalhar para melhorar ainda mais o nosso atendimento. Até a próxima!
+    </p>
+  </div>
+
+  <div class="footer">© Cordeiro Pneus · Avaliação segura</div>
+</div>
+
+<script>
+  const GOOGLE_REVIEW_URL = "https://www.google.com/search?q=cordeiro+pneus&rlz=1C1GCEU_pt-BRBR1101BR1101&oq=cordeiro+pneus+&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIJCAEQRRg7GIAEMhUIAhAuGCcYrwEYxwEYgAQYigUYjgUyEAgDEC4YrwEYxwEYgAQYjgUyEAgEEC4YrwEYxwEYgAQYjgUyBggFEEUYPTIGCAYQRRg8MgYIBxBFGDzSAQkxMDIwN2owajeoAgCwAgA&sourceid=chrome&ie=UTF-8&sei=yZYVaq6sNeTZ1sQPo_jOsQQ#sv=CAESzQEKuQEStgEKd0FNbjMteVJ2MGJEcTRGaFUxQ3ZjQnNNdlIwMmRHZVBLcHFNUU5Zdy1QcENxRHNsRk5wa3VXTXFvUklubnFydGx2TTZMcFUwd1R5bU00WWRaZHJlSnZhamFJY0NzUWxKT2RDLVFZVU5icmxLajgwbjg1blV6NFM4Ehd0NVlWYXFISUVKSGQ1T1VQMUtPbjRBZxoiQUpLTEZtSTBxZFF6bjViUGFNUjJiR3M3Y2MyZjgweTdvURIEODA1MRoBMyoAMAA4AUAAGAAgqt2mkwI6AEoCEAI";
+
+  const stars = document.querySelectorAll('.star');
+  let currentRating = 0;
+
+  // Hover effects
+  stars.forEach((star, idx) => {
+    star.addEventListener('mouseenter', () => highlightStars(idx + 1, true));
+    star.addEventListener('mouseleave', () => highlightStars(currentRating, false));
+    star.addEventListener('click', () => selectRating(idx + 1));
+    star.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') selectRating(idx + 1); });
+  });
+
+  function highlightStars(count, isHover) {
+    stars.forEach((s, i) => {
+      s.classList.toggle(isHover ? 'hovered' : 'selected', i < count);
+      if (!isHover) s.classList.remove('hovered');
+    });
+  }
+
+  function selectRating(value) {
+    currentRating = value;
+    stars.forEach((s, i) => {
+      s.classList.toggle('selected', i < value);
+      s.classList.remove('hovered', 'active-pulse');
+    });
+    // Trigger pulse on selected stars
+    setTimeout(() => {
+      stars.forEach((s, i) => { if (i < value) s.classList.add('active-pulse'); });
+      setTimeout(() => stars.forEach(s => s.classList.remove('active-pulse')), 400);
+    }, 10);
+
+    if (value === 5) {
+      setTimeout(() => { window.location.href = GOOGLE_REVIEW_URL; }, 380);
+    } else {
+      showFeedbackForm();
+    }
+  }
+
+  function showFeedbackForm() {
+    const section = document.getElementById('feedbackSection');
+    section.classList.remove('visible');
+    void section.offsetWidth; // reflow to restart animation
+    section.classList.add('visible');
+    setTimeout(() => document.getElementById('feedbackText').focus(), 100);
+  }
+
+  function submitFeedback() {
+    const text = document.getElementById('feedbackText').value.trim();
+    if (!text) {
+      document.getElementById('feedbackText').focus();
+      document.getElementById('feedbackText').style.borderColor = 'rgba(255,107,53,0.6)';
+      setTimeout(() => document.getElementById('feedbackText').style.borderColor = '', 1500);
+      return;
+    }
+
+    // Save to localStorage as simple log
+    const feedbacks = JSON.parse(localStorage.getItem('cordeiro_feedbacks') || '[]');
+    feedbacks.push({
+      rating: currentRating,
+      comment: text,
+      date: new Date().toLocaleString('pt-BR')
+    });
+    localStorage.setItem('cordeiro_feedbacks', JSON.stringify(feedbacks));
+
+    // Send via FormSubmit (no backend needed)
+   fetch('https://docs.google.com/forms/d/e/1FAIpQLScrGUXmP5Io4i30-_be82z0ZXDm2keq-KkVehY4CbEqhi9NdA/formResponse', {
+method: 'POST',
+mode: 'no-cors',
+headers: {
+'Content-Type': 'application/x-www-form-urlencoded'
+},
+body:
+'entry.311224031=' + encodeURIComponent(currentRating + ' estrela(s)') +
+'&entry.551696121=' + encodeURIComponent(text)
+}).catch(() => {});
+
+
+    // Show thank you
+    document.getElementById('ratingSection').style.display = 'none';
+    const ty = document.getElementById('thankYouFeedback');
+    ty.classList.add('visible');
+  }
+</script>
+</body>
+</html>
